@@ -32,4 +32,3 @@ export const Client=sequelize.define("client",{
         defaultValue:true
     },
 })
-
