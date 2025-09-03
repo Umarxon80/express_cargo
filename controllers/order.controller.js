@@ -46,10 +46,6 @@ export const GetOneOrder = async (req, res) => {
 export const AddOrder = async (req, res) => {
   try {
     const { product_link, quantity, sum, truck, desc, clientId } = req.body;
-    const check = await Order.findOne({ where: { clientId } });
-    if (check) {
-      return res.status(403).send({ message: "Such Order already exists" });
-    }
     const NewOrder = await Order.create({
       product_link,
       quantity,

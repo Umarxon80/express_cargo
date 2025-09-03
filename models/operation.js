@@ -2,6 +2,7 @@ import {sequelize } from "../config/db.js";
 import {DataTypes} from "sequelize";
 import { Admin } from "./admin.js";
 import { Order } from "./order.js";
+import { Status } from "./status.js";
 
 export const Operation=sequelize.define("operation",{
     id:{
@@ -18,6 +19,6 @@ export const Operation=sequelize.define("operation",{
 })
 Admin.belongsToMany(Order,{through:Operation})
 Order.belongsToMany(Admin,{through:Operation})
-
+Operation.hasOne(Status)
 Operation.belongsTo(Admin)
 Operation.belongsTo(Order)

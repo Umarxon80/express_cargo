@@ -42,12 +42,13 @@ export const GetOneOperation = async (req, res) => {
 
 export const AddOperation = async (req, res) => {
   try {
-    const { operation_date, desc, adminId, orderId } = req.body;
+    const { operation_date, desc, adminId, orderId,statusId } = req.body;
     const NewOperation = await Operation.create({
       operation_date,
       desc,
       adminId,
       orderId,
+      statusId
     });
     res.status(201).send({
       message: "New Operation is added",
