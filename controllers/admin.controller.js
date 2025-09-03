@@ -1,8 +1,9 @@
 import { Admin } from "../models/admin.js";
+import { Order } from "../models/order.js";
 
 export const GetAllAdmins = async (req, res) => {
   try {
-    const Admins = await Admin.findAll();
+    const Admins = await Admin.findAll({include:[{model:Order, through:{attributes:[]}}]});
 
     res.status(200).send({
       message: "All Admins",
@@ -97,3 +98,4 @@ export const DeleteAdmin = async (req, res) => {
     res.status(500).send({ error: "Error deleted Admin" });
   }
 };
+

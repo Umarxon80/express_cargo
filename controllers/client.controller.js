@@ -1,8 +1,10 @@
+import { Op } from "sequelize";
 import { Client } from "../models/client.js";
+import { Order } from "../models/order.js";
 
 export const GetAllClients = async (req, res) => {
   try {
-    const Clients = await Client.findAll();
+    const Clients = await Client.findAll({ include: Order });
 
     res.status(200).send({
       message: "All Clients",
@@ -74,23 +76,24 @@ export const PatchClient = async (req, res) => {
   }
 };
 
-
 export const DeleteClient = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const check = await Client.findOne({ where: { id } });
-      if (!check) {
-        return res.status(403).send({ message: "Such Client doesn't exists" });
-      }
-      const fClient = await Client.destroy( {
-        where: { id },
-      });
-      res.status(201).send({
-        message: "Client is deleted",
-        data: id,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({ error: "Error deleted Client" });
+  try {
+    const { id } = req.params;
+    const check = await Client.findOne({ where: { id } });
+    if (!check) {
+      return res.status(403).send({ message: "Such Client doesn't exists" });
     }
-  };
+    const fClient = await Client.destroy({
+      where: { id },
+    });
+    res.status(201).send({
+      message: "Client is deleted",
+      data: id,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Error deleted Client" });
+  }
+};
+
+
