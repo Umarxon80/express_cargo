@@ -61,8 +61,6 @@ export const Search3 =async(req,res)=>{
                 model: Order,
                 attributes: []
             }],
-            group: ['Client.id'],
-            order: [[Sequelize.literal('orderCount'), 'DESC']], 
             limit: 5
           });
         res.status(200).send({
