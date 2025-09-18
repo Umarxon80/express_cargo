@@ -1,5 +1,7 @@
+import { SendErrorResponse } from "../helpers/send.error.response.js";
 import { Admin } from "../models/admin.js";
 import { Order } from "../models/order.js";
+import bcrypt from "bcrypt";
 
 export const GetAllAdmins = async (req, res) => {
   try {
@@ -32,15 +34,19 @@ export const GetOneAdmin = async (req, res) => {
 
 export const AddAdmin = async (req, res) => {
   try {
-    const {full_name,user_name,password,phone_number,email,tg_link,is_creator,is_active,description} = req.body;
+    const {full_name,user_name,password,confirm_password,phone_number,email,tg_link,is_creator,is_active,description} = req.body;
     const check = await Admin.findOne({ where: { email } });
     if (check) {
-      return res.status(403).send({ message: "Such Admin already exists" });
+      return SendErrorResponse({ message: "Such Admin already exists" },res,403)
     }
+    if (password!=confirm_password) {
+      return SendErrorResponse({ message: "Passwords doesn't match" },res,400) 
+    }
+    const hashedPassword =await bcrypt.hash(password,7)
     const NewAdmin = await Admin.create({
       full_name,
       user_name,
-      password,
+      password:hashedPassword,
       phone_number,
       email,
       tg_link,
@@ -53,10 +59,9 @@ export const AddAdmin = async (req, res) => {
       data: NewAdmin,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: "Error adding Admin" });
+    return SendErrorResponse(error,res,500) 
   }
-};
+}
 
 export const PatchAdmin = async (req, res) => {
   try {

@@ -15,7 +15,7 @@ export const Admin=sequelize.define("admin",{
         type:DataTypes.STRING(20)
     },
     password:{
-        type:DataTypes.STRING(20)
+        type:DataTypes.STRING
     },
     phone_number:{
         type:DataTypes.STRING(20)
@@ -27,8 +27,8 @@ export const Admin=sequelize.define("admin",{
     tg_link:{
         type:DataTypes.STRING(20)
     },
-    token:{
-        type:DataTypes.STRING(20)
+    refreshToken:{
+        type:DataTypes.STRING
     },
     is_creator:{
         type:DataTypes.BOOLEAN,

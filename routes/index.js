@@ -6,6 +6,7 @@ import Adminrouter from "./admin.routes.js";
 import Orderrouter from "./order.routes.js";
 import Operationrouter from "./operation.routes.js";
 import Searchrouter from "./search.routes.js";
+import authrouter from "./auth.routes.js";
 
 const router=Router()
 router.use("/client",Clientrouter)
@@ -15,6 +16,7 @@ router.use("/admin",Adminrouter)
 router.use("/order",Orderrouter)
 router.use("/operation",Operationrouter)
 router.use("/search",Searchrouter)
+router.use("/auth",authrouter)
 
 
 export default router
