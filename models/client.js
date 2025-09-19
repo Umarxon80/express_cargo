@@ -9,7 +9,7 @@ export const Client=sequelize.define("client",{
     },
     full_name:{
         type:DataTypes.STRING(50),
-        allowNull:false
+        // allowNull:false
     },
     phone_number:{
         type:DataTypes.STRING(15),
