@@ -1,5 +1,3 @@
-
-
 function login() {
     const form=document.getElementById("login_form")
     form.addEventListener("submit", async(e)=>{

@@ -4,6 +4,7 @@ import otpGenerator from "otp-generator";
 import { Otp } from "../models/otp.js";
 import { decode, encode } from "../helpers/crypt.js";
 import { Client } from "../models/client.js";
+import smsService from "../services/sms.service.js";
 export const newOtp = async (req, res) => {
   try {
     const { phone_number } = req.body;
@@ -18,6 +19,17 @@ export const newOtp = async (req, res) => {
     const newOtpRow = await Otp.create({ otp, expiration_time });
 
     // from sms or email or bot
+    const responce = await smsService.sendSms(phone_number, otp);
+    
+    if (responce.status != 200) {
+      console.log(responce);
+      
+      return SendErrorResponse({ message: "Error sending OTP" }, res, 503);
+    }
+
+    const smsMessage = `OTP ${phone_number.slice(phone_number.length - 4)} raqamga yuborildi`;
+
+
     const details = {
       timestamp: now,
       phone_number,
@@ -41,58 +53,68 @@ export const verifyOtp = async (req, res) => {
     const decodedData = await decode(verification_key);
     const details = JSON.parse(decodedData);
     if (details.phone_number != phone_number) {
-      return SendErrorResponse({
-        message: "OTP wasn't send to this phone number"},
+      return SendErrorResponse(
+        {
+          message: "OTP wasn't send to this phone number",
+        },
         res,
         400
       );
     }
-    const otpRow= await Otp.findByPk(details.otp_id);
+    const otpRow = await Otp.findByPk(details.otp_id);
     if (!otpRow) {
-        return SendErrorResponse({
-            message: "OTP doesn't exists"},
-            res,
-            400
-          );
+      return SendErrorResponse(
+        {
+          message: "OTP doesn't exists",
+        },
+        res,
+        400
+      );
     }
     if (otpRow.verified) {
-        return SendErrorResponse({
-            message: "OTP is alread used"},
-            res,
-            400
-          );
+      return SendErrorResponse(
+        {
+          message: "OTP is alread used",
+        },
+        res,
+        400
+      );
     }
-    if (otpRow.expiration_time<currentTime) {
-        return SendErrorResponse({
-            message: "OTP is expired"},
-            res,
-            400
-          );
+    if (otpRow.expiration_time < currentTime) {
+      return SendErrorResponse(
+        {
+          message: "OTP is expired",
+        },
+        res,
+        400
+      );
     }
-    if (otpRow.otp!=otp) {
-        return SendErrorResponse({
-            message: "Wrong otp"},
-            res,
-            400
-          );
+    if (otpRow.otp != otp) {
+      return SendErrorResponse(
+        {
+          message: "Wrong otp",
+        },
+        res,
+        400
+      );
     }
-    otpRow.verified=true
-    await otpRow.save()
-    const clientRow=await Client.findOne({where:{phone_number}})
-    let clientId,isNewClient;
+    otpRow.verified = true;
+    await otpRow.save();
+    const clientRow = await Client.findOne({ where: { phone_number } });
+    let clientId, isNewClient;
     if (clientRow) {
-        clientId=clientId.id;
-        isNewClient=false;
-    }else{
-        const NewClient = await Client.create({phone_number})
-        clientId=NewClient.id;
-        isNewClient=true;
+      clientId = clientId.id;
+      isNewClient = false;
+    } else {
+      const NewClient = await Client.create({ phone_number });
+      clientId = NewClient.id;
+      isNewClient = true;
     }
     res.send({
-        message:"Success",
-        clientId,
-        isNewClient
-    })
+      message: "Success",
+      clientId,
+      isNewClient,
+    });
   } catch (error) {
     SendErrorResponse(error, res, 500);
   }

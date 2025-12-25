@@ -10,18 +10,20 @@ import ViewRouter from "./routes/views.routes.js";
 const PORT=config.get("port") ?? 4000
 
 
-// process.on("uncaughtException", (exeption)=>{
-//     console.log("uncaughtException:",exeption.message);
+process.on("uncaughtException", (exeption)=>{
+    console.log("uncaughtException:",exeption.message);
     
-// })
+})
 
-// process.on("unhandledRejection", (reject)=>{
-//     console.log("unhandledRejection:",reject);
-// })
+process.on("unhandledRejection", (reject)=>{
+    console.log("unhandledRejection:",reject);
+})
 
 const app=express()
 app.use(express.json())
 app.use(cookieParser())
+
+// Handlebars setup
 const hbs=exHbs.create({
     defaultLayout:"main",
     extname:"hbs"
@@ -32,6 +34,7 @@ app.set('views', './views');
 app.use(express.static("views"))
 
 app.use("/",ViewRouter)
+
 app.use("/api",index)
 app.use(errorHandling)
 
